@@ -6,6 +6,6 @@ __pycache__/
 .DS_Store
 .idea/
 .python-version
-.venv
+venv
 
 /config.env
