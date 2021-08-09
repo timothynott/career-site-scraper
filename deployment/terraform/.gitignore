@@ -1,0 +1,3 @@
+# don't commit terraform providers and whatever else into the repo
+.terraform
+terraform.tfstate

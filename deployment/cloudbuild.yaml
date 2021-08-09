@@ -1,0 +1,38 @@
+substitutions:
+  _SERVICE_NAME: career-site-scraper-alpha
+
+steps:
+  # Build Docker image.
+  - name: "gcr.io/cloud-builders/docker"
+    id: imagebuild
+    waitFor: ["-"]
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/$_SERVICE_NAME:$SHORT_SHA"
+      - "."
+  - name: "gcr.io/cloud-builders/docker"
+    id: imagepush
+    waitFor: ["imagebuild"]
+    args: ["push", "gcr.io/$PROJECT_ID/$_SERVICE_NAME"]
+
+  # Deploy service.
+  - id: "deploy"
+    name: "hashicorp/terraform:1.0.0"
+    waitFor: ["imagepush"]
+    env:
+      - "TF_VAR_project_id=$PROJECT_ID"
+      - "TF_VAR_docker_image_tag=$SHORT_SHA"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        set -e
+        cd deployment/terraform
+        terraform init -backend-config="bucket=${PROJECT_ID}-tfstate"
+        terraform workspace new "$_SERVICE_NAME" || terraform workspace select "$_SERVICE_NAME"
+        terraform apply -auto-approve
+
+images: ["gcr.io/$PROJECT_ID/$_SERVICE_NAME"]

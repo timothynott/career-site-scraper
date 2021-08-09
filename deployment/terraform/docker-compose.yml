@@ -1,0 +1,22 @@
+# This is a basic utility service for running terraform commands locally
+version: '3.5'
+services:
+  # this is the container's hostname within the ff-backend docker network
+  terraform:
+    image: 'hashicorp/terraform:1.0.0'
+    volumes:
+      - '.:/ff'
+      - 'dotconfig:/root/.config'
+    working_dir: '/ff'
+    entrypoint: sh
+
+volumes:
+  dotconfig:
+    # created by bootstrap.sh script using gcloud container
+    external: true
+    
+networks:
+  default:
+    # created by bootstrap.sh script
+    external: true
+    name: ff-backend
