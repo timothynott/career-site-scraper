@@ -6,28 +6,18 @@ from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
 from ..procs import *
 
 
-class CreativeconvertingComSpider(Spider):
-    name = 'creativeconverting.com'
-    allowed_domains = ['creativeconverting.com', 'recruiting.ultipro.com']
-    start_urls = ['http://creativeconverting.com/']
-    xpath = {
-        'careers_link': '//a[div[text()="CAREERS"]]/@href',
-    }
+class UltiProSpider(Spider):
+    name = 'ultipro'
+    allowed_domains = ['ultipro.com']
+    start_urls = ['https://recruiting.ultipro.com/ARC1018']
     re = {
         'job_data': r'CandidateOpportunityDetail\((\{.+\})\);\s*',
     }
     search_api_endpoint = '/JobBoardView/LoadSearchResults'
     opportunity_url = '/OpportunityDetail?opportunityId={}'
 
-    # navigate to career page
-    # ? yields unnecessarily duplicated request
-    def parse(self, response):
-        careers_link = response.xpath(self.xpath['careers_link']).get()
-        assert careers_link, 'No careers link on the home page'
-        yield Request(careers_link, callback=self.careers_page)
-
     # make paginated request to API (JSON)
-    def careers_page(self, response):
+    def parse(self, response):
         yield JsonRequest(
             response.url + self.search_api_endpoint,
             method='POST',
@@ -58,7 +48,8 @@ class CreativeconvertingComSpider(Spider):
         for opportunity in data['opportunities']:
             opportunity_id = opportunity.get('Id')
             assert opportunity_id, 'No opportunity ID'
-            url = response.meta['base_url'] + self.opportunity_url.format(opportunity_id)
+            url = response.meta['base_url'] + \
+                self.opportunity_url.format(opportunity_id)
             yield Request(url, callback=self.parse_job)
 
     def parse_job(self, response):

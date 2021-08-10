@@ -7,5 +7,7 @@ __pycache__/
 .idea/
 .python-version
 venv/
-
 /config.env
+
+# WK: update
+data*

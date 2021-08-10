@@ -6,8 +6,8 @@ from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
 from ..procs import *
 
 
-class CrosstexComSpider(Spider):
-    name = 'crosstex.com'
+class ICIMSSpider(Spider):
+    name = 'icims'
     allowed_domains = ['icims.com']
     # use '.../search?pr=1' for pagination instead of duplicating request?
     #   would it be possible to derive this strategy automatically?
@@ -63,6 +63,9 @@ class CrosstexComSpider(Spider):
         job_loader.add_xpath('state', self.xpath['location'], re=self.re['state'])
         job_loader.add_xpath('description', self.xpath['description'])
         shift_info_loader = ShiftInfoLoader()
+        # WK:   if there is not specific shift/wage field, can exclude parsing;
+        #       IngestAPI will take care of parsing shift/wage from title/description
+        #       (carry across spiders)
         shift_info_loader.add_value('shifts', title)
         shift_info = shift_info_loader.load_item()
         job_loader.add_value('shiftInfo', shift_info)
