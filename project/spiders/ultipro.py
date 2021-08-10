@@ -3,7 +3,6 @@ import json
 from scrapy import Spider, Request
 from scrapy.http import JsonRequest
 from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
-from ..procs import *
 
 
 class UltiProSpider(Spider):

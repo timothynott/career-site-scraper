@@ -15,6 +15,8 @@ This is service to scrape job data from a variety of listing urls.
 1. Activate virtual environment (if you already haven't done so): `source venv/bin/activate`
 1. Run a spider as follows (from directory where `scrapy.cfg` is located):
 	`scrapy crawl icims -O data.json`
+1. Run main script as follows:
+	`python3 main.py`
 
 
 ## Other

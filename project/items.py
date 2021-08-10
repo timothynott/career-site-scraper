@@ -9,7 +9,7 @@ from itemloaders.processors import MapCompose, TakeFirst, Identity
 from w3lib.html import remove_tags, replace_entities
 from .procs import description_proc, job_type_proc, job_level_proc, wage_proc, shifts_proc
 
-# WK: remove unused loaders
+# TODO: remove unused items/loaders
 
 class Job(Item):
     company = Field()

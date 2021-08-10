@@ -1,10 +1,5 @@
-import re
-import json
 from scrapy import Spider, Request
-from scrapy.http import JsonRequest
-from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
-from ..procs import *
-
+from ..items import JobLoader, ShiftInfoLoader
 
 class ICIMSSpider(Spider):
     name = 'icims'

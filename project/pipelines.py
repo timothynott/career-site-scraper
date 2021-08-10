@@ -44,15 +44,16 @@ class IngestJobPipeline:
         self.tasks = GoogleCloudTasks()
         self.current_batch = []
 
-        logging.info("initiating batch {}".format(spider.name))
-        # start the batch
+        # TODO: Use source/site name, not spider name.
+        logging.info("{}: initiating ingestion".format(spider.name))
+        # task: initiate ingestion
         initiate_route = "{}/initiate?source={}".format(
             self.job_board_ingest_route, spider.name)
         self.tasks.queue_task(self.queue_name, initiate_route, {}, 'POST')
 
     def close_spider(self, spider):
-        # send batch to Ingest API
-        logging.info("sending batch {}".format(spider.name))
+        # task: send jobs
+        logging.info("{}: sending job batch".format(spider.name))
         payload = {
             "source": spider.name,
             "jobs": self.current_batch,
@@ -61,19 +62,18 @@ class IngestJobPipeline:
         self.tasks.queue_task(
             self.queue_name, self.job_board_ingest_route, payload, 'PUT')
 
-        logging.info("completing batch {}".format(spider.name))
-        # complete the batch
+        logging.info("{}: completing ingestion".format(spider.name))
+        # task: complete ingestion
         complete_route = "{}/complete?source={}".format(
             self.job_board_ingest_route, spider.name)
         self.tasks.queue_task(self.queue_name, complete_route, {}, 'POST')
 
-        logging.info("done spidering {}...".format(spider.name))
+        logging.info("{}: closing spider".format(spider.name))
 
     def process_item(self, item, spider):
-        # TODO: implement batch size checking
-        # if batch size + item size > max batch size
-        #     send current batch to Ingest API
-        #     truncate current batch
+        # TODO: implement batching based on size
+        # if batch size + item size > max batch size (1 MB)
+        #     truncate batch and send to IngestAPI
 
         normalized_job = {
             "url": item.get('jobSourceUrl'),

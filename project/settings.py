@@ -1,5 +1,3 @@
-# TODO: Update settings.
-
 # Scrapy settings for scrapers project
 #
 # For simplicity, this file contains only settings considered important or
@@ -11,6 +9,11 @@
 
 import logging
 
+# !!!!!!!!!!
+# !!!!!!!!!!
+# TODO: Finalize all settings.
+# !!!!!!!!!!
+# !!!!!!!!!!
 
 BOT_NAME = 'scraper'
 
