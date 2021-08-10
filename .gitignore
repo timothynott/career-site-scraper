@@ -6,8 +6,8 @@ __pycache__/
 .DS_Store
 .idea/
 .python-version
-venv/
 /config.env
+venv/
 
 # WK: update
 data*
