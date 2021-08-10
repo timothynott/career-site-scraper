@@ -1,3 +1,5 @@
+# TODO: Update settings.
+
 # Scrapy settings for scrapers project
 #
 # For simplicity, this file contains only settings considered important or
@@ -10,13 +12,13 @@
 import logging
 
 
-BOT_NAME = 'scrapers'
+BOT_NAME = 'scraper'
 
-SPIDER_MODULES = ['scrapers.scrapers.spiders']
-NEWSPIDER_MODULE = 'scrapers.scrapers.spiders'
+SPIDER_MODULES = ['project.spiders']
+NEWSPIDER_MODULE = 'project.spiders'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 32
@@ -47,13 +49,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'scrapers.scrapers.middlewares.ScrapersSpiderMiddleware': 543,
+#    'project.middlewares.ScrapersSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    'scrapers.scrapers.middlewares.ScrapersDownloaderMiddleware': 543,
+#    'project.middlewares.ScrapersDownloaderMiddleware': 543,
 # }
 
 # Enable or disable extensions
@@ -65,8 +67,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'scrapers.scrapers.pipelines.DropEmptyPipeline': 100,
-    'scrapers.scrapers.pipelines.IngestJobPipeline': 900,
+    'project.pipelines.DropEmptyPipeline': 100,
+    # 'project.pipelines.IngestJobPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -84,11 +86,11 @@ ITEM_PIPELINES = {
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-HTTPCACHE_ENABLED = True
-HTTPCACHE_EXPIRATION_SECS = 3600
-HTTPCACHE_DIR = '/tmp/httpcache'
-HTTPCACHE_IGNORE_HTTP_CODES = [502]
-HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_ENABLED = True
+# HTTPCACHE_EXPIRATION_SECS = 3600
+# HTTPCACHE_DIR = '/tmp/httpcache'
+# HTTPCACHE_IGNORE_HTTP_CODES = [502]
+# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # LOG_LEVEL = logging.WARNING
 LOG_LEVEL = logging.INFO
