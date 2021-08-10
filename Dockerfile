@@ -9,26 +9,22 @@ ARG PYTHON_VERSION=3.9.5
 
 FROM python:${PYTHON_VERSION} as development
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-# Install app dependencies
-COPY requirements.txt ./
-RUN pip install --timeout 1000 -r requirements.txt
-
-ENV HOST=0.0.0.0 PORT=8080
-EXPOSE ${PORT}
-
-CMD exec gunicorn --bind $HOST:$PORT --workers 1 --threads 1 --timeout 0 main:app
-
 ###
 # BUILDER IMAGE
 #
-# This builds upon the development image, adding code and doing whatever else
-# is necessary to build the complete image.
+# This builds upon the development image, installs modules, builds the code,
+# and runs the main script.
 ###
 
 FROM development as builder
 
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY requirements.txt ./
+RUN pip install --timeout 1000 -r requirements.txt
+
 COPY . ./
+
+CMD [ "python3", "main.py" ]
+
