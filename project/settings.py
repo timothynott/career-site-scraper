@@ -70,8 +70,10 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    # WK: WriteJson => Ingest
     'project.pipelines.DropEmptyPipeline': 100,
-    # 'project.pipelines.IngestJobPipeline': 900,
+    'project.pipelines.WriteJsonPipeline': 200,
+    # 'project.pipelines.IngestPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

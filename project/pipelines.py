@@ -3,8 +3,10 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+import json
 import logging
 import os
+from itemadapter import ItemAdapter
 from scrapy.item import Item
 from scrapy.exceptions import DropItem
 from .services.cloud_tasks import GoogleCloudTasks
@@ -25,6 +27,25 @@ def drop_empty(data):
         if not val and not isinstance(val, (int, float, bool)):
             data.pop(key)
 
+            
+            
+class WriteJsonPipeline:
+
+    def open_spider(self, spider):
+        self.dirname = '_output'
+        if not os.path.exists(self.dirname):
+            os.mkdir(self.dirname)
+        self.filename = self.dirname + '/' + spider.config['company_name'] + '_' + spider.name + '.json'
+        self.file = open(self.filename, 'w')
+
+    def close_spider(self, spider):
+        self.file.close()
+
+    def process_item(self, item, spider):
+        line = json.dumps(ItemAdapter(item).asdict()) + "\n"
+        self.file.write(line)
+        return item
+
 
 class DropEmptyPipeline:
 
@@ -36,7 +57,7 @@ class DropEmptyPipeline:
             raise DropItem('Empty item')
 
 
-class IngestJobPipeline:
+class IngestPipeline:
     queue_name = os.environ.get("JOB_BATCH_INGEST_QUEUE_NAME")
     job_board_ingest_route = "/job-list"
 
