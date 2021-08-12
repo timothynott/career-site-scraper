@@ -1,29 +1,39 @@
 import re
 import json
-from scrapy import Spider, Request
+from ._base import CareerSitesSpider
+from scrapy import Request
 from scrapy.http import JsonRequest
 from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
+from ..procs import *
 
-
-class UltiProSpider(Spider):
+class ScrapeUltiproSpider(CareerSitesSpider):
     name = 'ultipro'
     allowed_domains = ['ultipro.com']
-    start_urls = ['https://recruiting.ultipro.com/ARC1018']
+
+    search_api_path = '/JobBoardView/LoadSearchResults'
+    opportunity_path = '/OpportunityDetail?opportunityId={}'
+    
     re = {
         'job_data': r'CandidateOpportunityDetail\((\{.+\})\);\s*',
     }
-    search_api_endpoint = '/JobBoardView/LoadSearchResults'
-    opportunity_url = '/OpportunityDetail?opportunityId={}'
+    
+    def start_requests(self):
+        url = self.config['url']
+        company_name = self.config['company_name']
 
-    # make paginated request to API (JSON)
-    def parse(self, response):
+        yield Request(
+            url,
+            meta={ 'company_name': company_name },
+            callback=self.parse_pagination
+        )
+
+    def parse_pagination(self, response):
         yield JsonRequest(
-            response.url + self.search_api_endpoint,
+            response.url + self.search_api_path,
             method='POST',
-            headers={'X-Requested-With': 'XMLHttpRequest'},
             data={
                 'opportunitySearch': {
-                    'Top': 100,
+                    'Top': 200,
                     'Skip': 0,
                     'QueryString': '',
                     'OrderBy': [
@@ -35,34 +45,40 @@ class UltiProSpider(Spider):
                     ],
                 },
             },
-            meta={'base_url': response.url},
-            callback=self.careers_api_call,
+            meta={
+                'base_url': response.url,
+                'company_name': response.meta['company_name'],
+            },
+            callback=self.parse_listing
         )
 
-    # get listing urls
-    # make request to each listing url (HTML)
-    def careers_api_call(self, response):
+    def parse_listing(self, response):
         data = response.json()
         assert isinstance(data, dict) and data.get('opportunities'), 'Invalid API payload'
         for opportunity in data['opportunities']:
             opportunity_id = opportunity.get('Id')
             assert opportunity_id, 'No opportunity ID'
-            url = response.meta['base_url'] + \
-                self.opportunity_url.format(opportunity_id)
-            yield Request(url, callback=self.parse_job)
+            url = response.meta['base_url'] + self.opportunity_path.format(opportunity_id)
+            yield Request(
+                url,
+                meta={
+                    'company_name': response.meta['company_name'],
+                },
+                callback=self.parse_job
+            )
 
     def parse_job(self, response):
-        # data happens to be in HTML script function, parse to JSON dict
-        # > var opportunity = new US.Opportunity.CandidateOpportunityDetail({ _job_data_ })
         match = re.search(self.re['job_data'], response.text)
         assert match, 'No job data on the page'
         data = json.loads(match.group(1))
         job_loader = JobLoader()
-        job_loader.add_value('company', 'Creative Converting, Inc.')
+        # TODO: change company name to actually have company name
+        job_loader.add_value('company', response.meta['company_name'])
         job_loader.add_value('jobSourceUrl', response.url)
         job_loader.add_value('title', data['Title'])
         job_loader.add_value('description', data['Description'])
         job_loader.add_value('jobType', data['Title'])
+        job_loader.add_value('date', data['PostedDate'])
         if not job_loader.get_output_value('jobType') and data['FullTime']:
             job_loader.add_value('jobType', 'FULL_TIME')
         job_loader.add_value('jobLevel', data['Title'])
