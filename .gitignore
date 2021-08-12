@@ -9,5 +9,5 @@ __pycache__/
 /config.env
 venv/
 
-# WK: update
-data*
+# dev/debug
+_output/
