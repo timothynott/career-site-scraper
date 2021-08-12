@@ -16,16 +16,17 @@ class ScrapeUltiproSpider(CareerSitesSpider):
     re = {
         'job_data': r'CandidateOpportunityDetail\((\{.+\})\);\s*',
     }
-    
+
+    # WK: merge all updates/solutions from prototype_scrapy
+
     def start_requests(self):
-        url = self.config['url']
-        company_name = self.config['company_name']
+        url = self.url
 
         yield Request(
             url,
-            meta={ 'company_name': company_name },
             callback=self.parse_pagination
         )
+
 
     def parse_pagination(self, response):
         yield JsonRequest(
@@ -45,12 +46,10 @@ class ScrapeUltiproSpider(CareerSitesSpider):
                     ],
                 },
             },
-            meta={
-                'base_url': response.url,
-                'company_name': response.meta['company_name'],
-            },
+            meta={ 'base_url': response.url,},
             callback=self.parse_listing
         )
+
 
     def parse_listing(self, response):
         data = response.json()
@@ -67,13 +66,14 @@ class ScrapeUltiproSpider(CareerSitesSpider):
                 callback=self.parse_job
             )
 
+
     def parse_job(self, response):
         match = re.search(self.re['job_data'], response.text)
         assert match, 'No job data on the page'
         data = json.loads(match.group(1))
         job_loader = JobLoader()
         # TODO: change company name to actually have company name
-        job_loader.add_value('company', response.meta['company_name'])
+        job_loader.add_value('company', self.company_name)
         job_loader.add_value('jobSourceUrl', response.url)
         job_loader.add_value('title', data['Title'])
         job_loader.add_value('description', data['Description'])

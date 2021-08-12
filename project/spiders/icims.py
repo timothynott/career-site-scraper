@@ -15,10 +15,6 @@ class ICIMSSpider(CareerSitesSpider):
         'job_page_script_json': r"<script type=\"application/ld\+json\">({?(.+)\"hiringOrganization\":.+)</script>",
     }
 
-    # WK: how to automatically inherit from base class?
-    url = ''
-    company_name = ''
-
 
     def start_requests(self):
         url = self.url + '&in_iframe=1'

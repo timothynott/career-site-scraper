@@ -4,7 +4,10 @@ class CareerSitesSpider(Spider):
 
     def __init__(self, *args, **kwargs):
         super(CareerSitesSpider, self).__init__(*args, **kwargs)
-        self.config = kwargs.get('config')
+
+        config = kwargs.get('config')
+        self.url = config.url
+        self.company_name = config.company_name
 
     def start_requests(self):
         pass
