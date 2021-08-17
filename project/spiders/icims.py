@@ -1,35 +1,27 @@
-from scrapy import Spider, Request
+from scrapy import Request
+from ._base import CareerSitesSpider
 from ..items import JobLoader, ShiftInfoLoader
+import json, re
 
-class ICIMSSpider(Spider):
+class ICIMSSpider(CareerSitesSpider):
     name = 'icims'
     allowed_domains = ['icims.com']
-    # use '.../search?pr=1' for pagination instead of duplicating request?
-    #   would it be possible to derive this strategy automatically?
-    start_urls = ['https://jobs-cantelmedical.icims.com/jobs/search?ss=1']
+
     xpath = {
         'listing_link': '//div[contains(@class, "iCIMS_PagingBatch")]//a/@href',
-        # could just use iCIMS_Anchor, but best to be explicit in cases of potential generic
         'job_link': '//div[contains(@class, "iCIMS_JobsTable")]/div//a[@class="iCIMS_Anchor"]/@href',
-        'title': '//h1[@class="iCIMS_Header"]//text()',
-        'location': '//span[text()="Location"]/following-sibling::span/text()',
-        'description': (
-            '//h2[contains(text(), "Who we are")]/preceding-sibling::'
-            'div[contains(@class, "iCIMS_InfoMsg_Job")]//text()'
-        ),
     }
     re = {
-        'city': r'\bUS-[A-Z]{2}-([A-Za-z -]+)\b',
-        'state': r'\bUS-([A-Z]{2})-[A-Za-z -]+\b',
+        'job_page_script_json': r"<script type=\"application/ld\+json\">({?(.+)\"hiringOrganization\":.+)</script>",
     }
 
-    def parse(self, response):
-        # again, is this an unnecessarily duplicated request?
-        # why in_iframe? is present in pagination hrefs, not in subsequent rendered page url (==response.url?)
-        #   if in_iframe excluded, job data is not present in response HTML doc
-        yield Request(response.url + '&in_iframe=1', callback=self.parse_pagination)
 
-    # ? listing links appear to render for first five pages only
+    def start_requests(self):
+        url = self.url + '&in_iframe=1'
+        yield Request(url, callback=self.parse_pagination)
+
+
+    # WK: ensure parses beyond first five pages;
     #   may be more stable to use "next page" button,
     #       or just to see pattern '/search?pr=(1,2,3,4,...)'
     #           if pr=(>max), simply returns no results
@@ -41,26 +33,39 @@ class ICIMSSpider(Spider):
             #       *absolute url, relative url, Link object, Selector object
             yield response.follow(link, callback=self.parse_listing)
 
+
     def parse_listing(self, response):
         for link in response.xpath(self.xpath['job_link']):
             yield response.follow(link, callback=self.parse_job)
 
+
     def parse_job(self, response):
+        match = re.search(self.re['job_page_script_json'], response.text)
+        assert match, 'No job data here'
+        data = json.loads(match.group(1))
+        
+        # pass job if description is unavailable or address state is unavailable
+        if data['description'] == 'UNAVAILABLE' or data['jobLocation'][0]['address']['addressRegion'] == 'UNAVAILABLE':
+            pass
+
         # why is response passed here (and not in others)?
         job_loader = JobLoader(response=response)
-        job_loader.add_value('company', 'Crosstex International, Inc.')
+        job_loader.add_value('company', response.meta['company_name'])
         job_loader.add_value('jobSourceUrl', response.url)
-        title = response.xpath(self.xpath['title']).get()
+        title = data['title']
         job_loader.add_value('title', title)
         job_loader.add_value('jobLevel', title)
         job_loader.add_value('jobType', title)
-        job_loader.add_xpath('city', self.xpath['location'], re=self.re['city'])
-        job_loader.add_xpath('state', self.xpath['location'], re=self.re['state'])
-        job_loader.add_xpath('description', self.xpath['description'])
-        shift_info_loader = ShiftInfoLoader()
+        job_loader.add_value('city', data['jobLocation'][0]['address']['addressLocality'])
+        job_loader.add_value('state', data['jobLocation'][0]['address']['addressRegion'])
+        job_loader.add_value('postalCode', data['jobLocation'][0]['address']['postalCode'])
+        job_loader.add_value('address', data['jobLocation'][0]['address']['streetAddress'])
+        job_loader.add_value('description', data['description'])
+        job_loader.add_value('date', data['datePosted'])
         # WK:   if there is not specific shift/wage field, can exclude parsing;
         #       IngestAPI will take care of parsing shift/wage from title/description
         #       (carry across spiders)
+        shift_info_loader = ShiftInfoLoader()
         shift_info_loader.add_value('shifts', title)
         shift_info = shift_info_loader.load_item()
         job_loader.add_value('shiftInfo', shift_info)

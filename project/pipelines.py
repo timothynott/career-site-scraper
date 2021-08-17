@@ -35,7 +35,8 @@ class WriteJsonPipeline:
         self.dirname = '_output'
         if not os.path.exists(self.dirname):
             os.mkdir(self.dirname)
-        self.filename = self.dirname + '/' + spider.configs[0]['company_name'] + '_' + spider.name + '.json'
+        # WK: update from prototype_scrapy
+        self.filename = self.dirname + '/' + spider.company_name + '_' + spider.name + '.json'
         self.file = open(self.filename, 'w')
 
     def close_spider(self, spider):
