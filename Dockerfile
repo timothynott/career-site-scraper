@@ -9,6 +9,9 @@ ARG PYTHON_VERSION=3.9.5
 
 FROM python:${PYTHON_VERSION} as development
 
+COPY requirements.txt ./
+RUN pip install --timeout 1000 -r requirements.txt
+
 ###
 # BUILDER IMAGE
 #
@@ -20,9 +23,6 @@ FROM development as builder
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-
-COPY requirements.txt ./
-RUN pip install --timeout 1000 -r requirements.txt
 
 COPY . ./
 
