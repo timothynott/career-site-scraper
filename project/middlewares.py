@@ -6,6 +6,7 @@
 from scrapy import signals
 from itemadapter import is_item, ItemAdapter
 
+
 class ScrapersSpiderMiddleware:
 
     @classmethod

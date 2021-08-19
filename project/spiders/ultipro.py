@@ -6,13 +6,14 @@ from scrapy.http import JsonRequest
 from ..items import JobLoader, WageInfoLoader, ShiftInfoLoader
 from ..procs import *
 
+
 class ScrapeUltiproSpider(CareerSitesSpider):
     name = 'ultipro'
     allowed_domains = ['ultipro.com']
 
     search_api_path = '/JobBoardView/LoadSearchResults'
     opportunity_path = '/OpportunityDetail?opportunityId={}'
-    
+
     re = {
         'job_data': r'CandidateOpportunityDetail\((\{.+\})\);\s*',
     }
@@ -26,7 +27,6 @@ class ScrapeUltiproSpider(CareerSitesSpider):
             url,
             callback=self.parse_pagination
         )
-
 
     def parse_pagination(self, response):
         yield JsonRequest(
@@ -46,10 +46,9 @@ class ScrapeUltiproSpider(CareerSitesSpider):
                     ],
                 },
             },
-            meta={ 'base_url': response.url,},
+            meta={'base_url': response.url, },
             callback=self.parse_listing
         )
-
 
     def parse_listing(self, response):
         data = response.json()
@@ -65,7 +64,6 @@ class ScrapeUltiproSpider(CareerSitesSpider):
                 },
                 callback=self.parse_job
             )
-
 
     def parse_job(self, response):
         match = re.search(self.re['job_data'], response.text)

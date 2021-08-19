@@ -27,8 +27,7 @@ def drop_empty(data):
         if not val and not isinstance(val, (int, float, bool)):
             data.pop(key)
 
-            
-            
+
 class WriteJsonPipeline:
 
     def open_spider(self, spider):

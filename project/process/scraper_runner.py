@@ -11,7 +11,7 @@ all_configs = [
         'spider_class': 'icims',
     },
     {
-        'url': 'https://external-weatherford.icims.com/jobs/search?ss=1&searchRelation=keyword_all', 
+        'url': 'https://external-weatherford.icims.com/jobs/search?ss=1&searchRelation=keyword_all',
         'company_name': 'Weatherford',
         'spider_class': 'icims'
     },
@@ -48,6 +48,7 @@ all_configs = [
 ]
 
 configs = all_configs[:1]
+
 
 class ScraperRunner:
     def __init__(self):

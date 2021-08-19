@@ -1,5 +1,6 @@
 from scrapy import Spider
 
+
 class CareerSitesSpider(Spider):
 
     def __init__(self, *args, **kwargs):

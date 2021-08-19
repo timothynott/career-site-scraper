@@ -21,22 +21,28 @@ SHIFTS_PATTERNS = {
 }
 
 # TODO: Support override of these (default) procs.
+
+
 def search_patterns(patterns, values):
     for value in values:
         for key, pattern in patterns.items():
             if re.search(rf'\b{pattern}\b', value, re.I):
                 yield key
 
+
 def job_level_proc(values):
     for value in search_patterns(JOB_LEVELS_PATTERNS, values):
         return value
+
 
 def job_type_proc(values):
     for value in search_patterns(JOB_TYPES_PATTERNS, values):
         return value
 
+
 def shifts_proc(values):
     return list(search_patterns(SHIFTS_PATTERNS, values))
+
 
 def wage_proc(values):
     for value in values:
@@ -46,6 +52,7 @@ def wage_proc(values):
                 return wage
         except ValueError:
             continue
+
 
 def description_proc(values):
     return re.sub(
