@@ -1,53 +1,8 @@
 import json
 import os
+from project.services.firestore import Firestore
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-
-# WK: create config class
-all_configs = [
-    {
-        'url': 'https://jobs-cantelmedical.icims.com/jobs/search?ss=1',
-        'company_name': 'Cantel Medical',
-        'spider_class': 'icims',
-    },
-    {
-        'url': 'https://external-weatherford.icims.com/jobs/search?ss=1&searchRelation=keyword_all',
-        'company_name': 'Weatherford',
-        'spider_class': 'icims'
-    },
-    {
-        'url': 'https://globalcareers-entegrisinc.icims.com/jobs/search?ss=1',
-        'company_name': 'Entegris, Inc.',
-        'spider_class': 'icims'
-    },
-    {
-        'url': 'https://globalhub-berryglobal.icims.com/jobs/search?ss=1',
-        'company_name': 'Berry Global Inc.',
-        'spider_class': 'icims'
-    },
-    {
-        'url': 'https://recruiting2.ultipro.com/AMS1003AMSII',
-        'company_name': 'Amsted Industries',
-        'spider_class': 'ultipro'
-    },
-    {
-        'url': 'https://recruiting.ultipro.com/ARC1018',
-        'company_name': 'ARCH',
-        'spider_class': 'ultipro'
-    },
-    {
-        'url': 'https://recruiting.ultipro.com/PRO1027PROMA',
-        'company_name': 'ProMach',
-        'spider_class': 'ultipro'
-    },
-    {
-        'url': 'https://recruiting.ultipro.com/COM1037COMAR',
-        'company_name': 'Comar',
-        'spider_class': 'ultipro'
-    },
-]
-
-configs = all_configs[:1]
 
 
 class ScraperRunner:
@@ -57,8 +12,10 @@ class ScraperRunner:
         os.environ.setdefault('SCRAPY_SETTINGS_MODULE', settings_file_path)
         self.settings = get_project_settings()
         self.process = CrawlerProcess(self.settings)
+        self.firestore = Firestore()
 
-    def run(self):
+    def run(self, configs):
+        # WK: kick off n=20 crawls (configs[:20]), then start one crawl when each finishes
         for config in configs:
             spider_class = config['spider_class']
             self.process.crawl(spider_class, config=config)

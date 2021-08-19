@@ -2,8 +2,9 @@ import os
 from google.cloud import firestore
 from scrapy.utils.serialize import ScrapyJSONEncoder
 
-# WK: crutch
-os.environ.setdefault("PROJECT_ID", "ff-app-dev")
+Collections = {
+    'CONFIG': 'scraper_configuration'
+}
 
 
 class Firestore:
@@ -11,6 +12,11 @@ class Firestore:
         project_id = os.environ.get("PROJECT_ID")
         self.db = firestore.Client(project=project_id)
 
-    def test(self):
-        a = self.db.collection('companies').limit(1).get()
-        print(a[0].to_dict())
+    # def test(self):
+    #     a = self.db.collection('companies').limit(1).get()
+    #     print(a[0].to_dict())
+
+    def get_configs(self):
+        docs = self.db.collection(Collections['CONFIG']).limit(1).get()
+        # docs = self.db.collection(Collections['CONFIG']).get()
+        return list(map(lambda doc: doc.to_dict(), docs))
