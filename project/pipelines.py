@@ -6,6 +6,7 @@
 import json
 import logging
 import os
+from project.services.firestore import Firestore
 from itemadapter import ItemAdapter
 from scrapy.item import Item
 from scrapy.exceptions import DropItem
@@ -59,44 +60,25 @@ class DropEmptyPipeline:
 
 class IngestPipeline:
     queue_name = os.environ.get("JOB_BATCH_INGEST_QUEUE_NAME")
-    job_board_ingest_route = "/job-list"
+    job_board_ingest_route = "/ingest"
+
+    def __init__(self):
+        self.firestore = Firestore()
+        self.tasks = GoogleCloudTasks()
 
     def open_spider(self, spider):
-        self.tasks = GoogleCloudTasks()
-        self.current_batch = []
-
-        # TODO: Use source/site name, not spider name.
-        logging.info("{}: initiating ingestion".format(spider.name))
-        # task: initiate ingestion
-        initiate_route = "{}/initiate?source={}".format(
-            self.job_board_ingest_route, spider.name)
-        self.tasks.queue_task(self.queue_name, initiate_route, {}, 'POST')
+        self.firestore.delete_cached_jobs(spider.url)
 
     def close_spider(self, spider):
-        # task: send jobs
-        logging.info("{}: sending job batch".format(spider.name))
-        payload = {
-            "source": spider.name,
-            "jobs": self.current_batch,
-        }
-        logging.debug(payload)
-        self.tasks.queue_task(
-            self.queue_name, self.job_board_ingest_route, payload, 'PUT')
-
-        logging.info("{}: completing ingestion".format(spider.name))
-        # task: complete ingestion
-        complete_route = "{}/complete?source={}".format(
-            self.job_board_ingest_route, spider.name)
-        self.tasks.queue_task(self.queue_name, complete_route, {}, 'POST')
-
-        logging.info("{}: closing spider".format(spider.name))
+        source = spider.url
+        logging.info("creating ingestion task: {}".format(source))
+        payload = {"source": source}
+        self.tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
 
     def process_item(self, item, spider):
-        # TODO: implement batching based on size
-        # if batch size + item size > max batch size (1 MB)
-        #     truncate batch and send to IngestAPI
-
+        source = spider.url
         normalized_job = {
+            "source": source,
             "url": item.get('jobSourceUrl'),
             "company": item.get('company'),
             "address": item.get('address'),
@@ -110,6 +92,7 @@ class IngestPipeline:
             "shiftInfo": item.get('shiftInfo'),
             "wageInfo": item.get('wageInfo'),
         }
-        self.current_batch.append(normalized_job)
 
+        # WK: test
+        self.firestore.set_cached_job(normalized_job)
         return item
