@@ -17,12 +17,13 @@ class FirestoreService:
         docs = self.db.collection(Collections['CONFIG']).get()
         return list(map(lambda doc: doc.to_dict(), docs))
 
+    # WK: set/delete docs more in parallel?
     def set_cached_job(self, doc: dict):
-        return self.db.collection(Collections['JOB_CACHE']).add(doc)
+        collection_ref = self.db.collection(Collections['JOB_CACHE'])
+        return collection_ref.add(doc)
 
     def delete_cached_jobs(self, source: str):
         collection_ref = self.db.collection(Collections['JOB_CACHE'])
-        # WK: ensure where clause functional
-        jobs_for_source = collection_ref.where('source', '==', source).select({}).get()
-        for job in jobs_for_source:
-            collection_ref.document(job.id).delete()
+        docs = collection_ref.where('source', '==', source).select({}).get()
+        for doc in docs:
+            collection_ref.document(doc.id).delete()
