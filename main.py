@@ -1,10 +1,10 @@
 from project.process.scraper_runner import ScraperRunner
-from project.services.firestore import Firestore
+from project.services.firestore import FirestoreService
 
 
 def scrape():
     # WK: restore (and remove temp config)
-    # firestore = Firestore()
+    # firestore = FirestoreService()
     # configs = firestore.get_configs()
 
     configs = [

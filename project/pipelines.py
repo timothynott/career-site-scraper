@@ -10,7 +10,7 @@ from itemadapter import ItemAdapter
 from scrapy.item import Item
 from scrapy.exceptions import DropItem
 from .services.cloud_tasks import GoogleCloudTasks
-from .services.firestore import Firestore
+from .services.firestore import FirestoreService
 
 
 def drop_empty(data):
@@ -62,7 +62,7 @@ class IngestPipeline:
     job_board_ingest_route = "/ingest"
 
     def __init__(self):
-        self.firestore = Firestore()
+        self.firestore = FirestoreService()
         self.tasks = GoogleCloudTasks()
 
     def open_spider(self, spider):

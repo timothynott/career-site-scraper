@@ -1,6 +1,6 @@
-from services.firestore import Firestore
+from services.firestore import FirestoreService
 
-firestore = Firestore()
+firestore = FirestoreService()
 
 configs = firestore.get_configs()
 print(configs[0])

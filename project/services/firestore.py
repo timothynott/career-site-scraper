@@ -1,6 +1,5 @@
 import os
 from google.cloud import firestore
-from scrapy.utils.serialize import ScrapyJSONEncoder
 
 Collections = {
     'CONFIG': 'scraper_configuration',
@@ -8,7 +7,8 @@ Collections = {
 }
 
 
-class Firestore:
+# TODO: make service singleton
+class FirestoreService:
     def __init__(self):
         project_id = os.environ.get("PROJECT_ID")
         self.db = firestore.Client(project=project_id)

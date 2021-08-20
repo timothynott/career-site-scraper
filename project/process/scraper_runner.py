@@ -1,6 +1,5 @@
-import json
 import os
-from project.services.firestore import Firestore
+from project.services.firestore import FirestoreService
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -12,7 +11,7 @@ class ScraperRunner:
         os.environ.setdefault('SCRAPY_SETTINGS_MODULE', settings_file_path)
         self.settings = get_project_settings()
         self.process = CrawlerProcess(self.settings)
-        self.firestore = Firestore()
+        self.firestore = FirestoreService()
 
     def run(self, configs):
         # WK: kick off n=20 crawls (configs[:20]), then start one crawl when each finishes
