@@ -72,7 +72,8 @@ class IngestPipeline:
         source = spider.url
         logging.info("creating ingestion task: {}".format(source))
         payload = {"source": source}
-        self.tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
+        # TODO: restore
+        # self.tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
 
     def process_item(self, item, spider):
         source = spider.url

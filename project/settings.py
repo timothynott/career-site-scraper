@@ -72,8 +72,8 @@ DEFAULT_REQUEST_HEADERS = {
 ITEM_PIPELINES = {
     # WK: WriteJson => Ingest
     'project.pipelines.DropEmptyPipeline': 100,
-    'project.pipelines.WriteJsonPipeline': 200,
-    # 'project.pipelines.IngestPipeline': 900,
+    # 'project.pipelines.WriteJsonPipeline': 200,
+    'project.pipelines.IngestPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
