@@ -3,7 +3,7 @@ from project.services.firestore import FirestoreService
 
 
 def scrape():
-    # WK: restore (and remove temp config)
+    # WK: restore (and remove hardcoded config)
     # firestore = FirestoreService()
     # configs = firestore.get_configs()
 
