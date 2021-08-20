@@ -6,11 +6,11 @@
 import json
 import logging
 import os
-from project.services.firestore import Firestore
 from itemadapter import ItemAdapter
 from scrapy.item import Item
 from scrapy.exceptions import DropItem
 from .services.cloud_tasks import GoogleCloudTasks
+from .services.firestore import Firestore
 
 
 def drop_empty(data):
@@ -35,8 +35,7 @@ class WriteJsonPipeline:
         self.dirname = '_output'
         if not os.path.exists(self.dirname):
             os.mkdir(self.dirname)
-        # WK: update from prototype_scrapy
-        self.filename = self.dirname + '/' + spider.company_name + '_' + spider.name + '.json'
+        self.filename = '{}/{}_{}.jsonl'.format(self.dirname, spider.name, spider.company_name)
         self.file = open(self.filename, 'w')
 
     def close_spider(self, spider):
