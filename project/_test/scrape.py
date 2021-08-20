@@ -28,22 +28,22 @@ test_configs = [
     {
         'url': 'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=08cf914d-e2d5-4aba-b95c-c33cf076da39',
         'company_name': 'Rice Lake Weighing Systems',
-        'spider_class': 'adp_wfn'
+        'spider_class': 'adp_workforcenow'
     },
     {
         'url': 'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=5af0373a-89ae-488e-b298-4066fdc2232a',
         'company_name': 'SP Industries',
-        'spider_class': 'adp_wfn'
+        'spider_class': 'adp_workforcenow'
     },
     {
         'url': 'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=66d93efd-a316-4416-9647-78a8a2fa5359',
         'company_name': 'Tecomet Talented',
-        'spider_class': 'adp_wfn'
+        'spider_class': 'adp_workforcenow'
     },
     {
         'url': 'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=82c90207-af7d-495b-b437-aa9a4c72f4e8',
         'company_name': 'Winnebago Industries',
-        'spider_class': 'adp_wfn'
+        'spider_class': 'adp_workforcenow'
     },
     {
         'url': 'https://recruiting2.ultipro.com/AMS1003AMSII',
