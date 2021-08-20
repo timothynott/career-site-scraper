@@ -7,7 +7,7 @@ from scrapy import Item, Field
 from scrapy.loader import ItemLoader
 from itemloaders.processors import MapCompose, TakeFirst, Identity
 from w3lib.html import remove_tags, replace_entities
-from .procs import description_proc, job_type_proc, job_level_proc, wage_proc, shifts_proc
+from .procs import date_proc, description_proc, job_type_proc, job_level_proc, wage_proc, shifts_proc
 
 # TODO: remove unused items/loaders
 
@@ -20,10 +20,10 @@ class Job(Item):
     state = Field()
     postalCode = Field()
     title = Field()
+    date = Field(output_processor=date_proc)
     description = Field(output_processor=description_proc)
-    # [FULL_TIME, PART_TIME, CONTRACT, INTERN]
     jobType = Field(output_processor=job_type_proc)
-    jobLevel = Field(output_processor=job_level_proc)  # [ENTRY, JUNIOR, MID, SENIOR]
+    jobLevel = Field(output_processor=job_level_proc)
     shiftInfo = Field(input_processor=Identity())
     wageInfo = Field(input_processor=Identity())
 

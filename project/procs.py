@@ -1,4 +1,5 @@
 import re
+from dateutil import parser as date_parser
 
 JOB_LEVELS_PATTERNS = {
     'ENTRY': 'entry',
@@ -52,6 +53,12 @@ def wage_proc(values):
                 return wage
         except ValueError:
             continue
+
+
+def date_proc(values):
+    values_str = str(values)
+    parsed_date = date_parser.parse(values_str, fuzzy=True)
+    return str(parsed_date)[:10]
 
 
 def description_proc(values):
