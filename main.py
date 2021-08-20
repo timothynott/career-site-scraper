@@ -3,15 +3,17 @@ from project.services.firestore import Firestore
 
 
 def scrape():
-    firestore = Firestore()
-    configs = firestore.get_configs()
+    # WK: restore (and remove temp config)
+    # firestore = Firestore()
+    # configs = firestore.get_configs()
 
-    # WK: temp
-    url = 'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=5af0373a-89ae-488e-b298-4066fdc2232a'
-    configs = list(filter(lambda c: c['url'] == url, configs))
-    print('\n\n')
-    print(configs)
-    print('\n\n')
+    configs = [
+        {
+            'company_name': 'Cornell Pump',
+            'url': 'https://recruiting.ultipro.com/ROP1001ROPER/JobBoard/5635cac7-6c69-44a7-850c-cf35112ce343',
+            'spider_class': 'ultipro'
+        }
+    ]
 
     scraper = ScraperRunner()
     scraper.run(configs)
