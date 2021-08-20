@@ -9,7 +9,7 @@ import os
 from itemadapter import ItemAdapter
 from scrapy.item import Item
 from scrapy.exceptions import DropItem
-from .services.cloud_tasks import GoogleCloudTasks
+from .services.cloud_tasks import CloudTasksService
 from .services.firestore import FirestoreService
 
 
@@ -63,7 +63,7 @@ class IngestPipeline:
 
     def __init__(self):
         self.firestore = FirestoreService()
-        self.tasks = GoogleCloudTasks()
+        self.tasks = CloudTasksService()
 
     def open_spider(self, spider):
         self.firestore.delete_cached_jobs(spider.url)

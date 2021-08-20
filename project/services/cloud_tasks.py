@@ -5,7 +5,7 @@ from google.cloud import tasks_v2
 from scrapy.utils.serialize import ScrapyJSONEncoder
 
 
-class GoogleCloudTasks:
+class CloudTasksService:
     def __init__(self):
         self.location = 'us-central1'
         self.project_id = os.environ.get("PROJECT_ID")
