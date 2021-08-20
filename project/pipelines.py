@@ -29,6 +29,16 @@ def drop_empty(data):
             data.pop(key)
 
 
+class DropEmptyPipeline:
+
+    def process_item(self, item, spider):
+        drop_empty(item)
+        if item:
+            return item
+        else:
+            raise DropItem('Empty item')
+
+
 class WriteJsonPipeline:
 
     def open_spider(self, spider):
@@ -45,16 +55,6 @@ class WriteJsonPipeline:
         line = json.dumps(ItemAdapter(item).asdict()) + "\n"
         self.file.write(line)
         return item
-
-
-class DropEmptyPipeline:
-
-    def process_item(self, item, spider):
-        drop_empty(item)
-        if item:
-            return item
-        else:
-            raise DropItem('Empty item')
 
 
 class IngestPipeline:

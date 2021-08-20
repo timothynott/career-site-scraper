@@ -29,7 +29,8 @@ CONCURRENT_REQUESTS = 32
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0
+# WK: revert to '= 0'
+DOWNLOAD_DELAY = .25
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 8
 # CONCURRENT_REQUESTS_PER_IP = 1
@@ -70,10 +71,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # WK: WriteJson => Ingest
     'project.pipelines.DropEmptyPipeline': 100,
-    # 'project.pipelines.WriteJsonPipeline': 200,
-    'project.pipelines.IngestPipeline': 900,
+    'project.pipelines.WriteJsonPipeline': 200,  # DEV
+    # 'project.pipelines.IngestPipeline': 900, # PRODUCTION
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -98,4 +98,4 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # LOG_LEVEL = logging.WARNING
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.ERROR
