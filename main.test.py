@@ -20,7 +20,11 @@ def scrape():
         # }
     ]
 
-    scraper = ScraperRunner()
+    runner_config = {
+        'CONCURRENT_CRAWLS': 2
+    }
+
+    scraper = ScraperRunner(config=runner_config)
     scraper.run(configs)
     return 0
 

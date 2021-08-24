@@ -97,5 +97,4 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = [502]
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-# LOG_LEVEL = logging.WARNING
-LOG_LEVEL = logging.ERROR
+LOG_LEVEL = logging.WARNING

@@ -93,6 +93,5 @@ class IngestPipeline:
             "wageInfo": item.get('wageInfo'),
         }
 
-        # WK: test
         self.firestore.set_cached_job(normalized_job)
         return item
