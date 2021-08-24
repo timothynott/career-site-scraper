@@ -12,6 +12,10 @@ from scrapy.exceptions import DropItem
 from .services.cloud_tasks import CloudTasksService
 from .services.firestore import FirestoreService
 
+# TODO: fetch singleton services
+firestore = FirestoreService()
+tasks = CloudTasksService()
+
 
 def drop_empty(data):
     for key, val in list(data.items()):
@@ -61,19 +65,15 @@ class IngestPipeline:
     queue_name = os.environ.get("JOB_BATCH_INGEST_QUEUE_NAME")
     job_board_ingest_route = "/ingest"
 
-    def __init__(self):
-        self.firestore = FirestoreService()
-        self.tasks = CloudTasksService()
-
     def open_spider(self, spider):
-        self.firestore.delete_cached_jobs(spider.url)
+        firestore.delete_cached_jobs(spider.url)
 
     def close_spider(self, spider):
         source = spider.url
         logging.info("creating ingestion task: {}".format(source))
         payload = {"source": source}
         # TODO: restore
-        # self.tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
+        # tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
 
     def process_item(self, item, spider):
         source = spider.url
@@ -94,5 +94,5 @@ class IngestPipeline:
             "wageInfo": item.get('wageInfo') and dict(item.get('wageInfo')),
         }
 
-        self.firestore.set_cached_job(normalized_job)
+        firestore.set_cached_job(normalized_job)
         return item
