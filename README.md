@@ -23,12 +23,12 @@ Execution:
 
 ```
 $ source venv/bin/activate
-$ python3 main.py
+$ python3 main.test.py
 ```
 
 ### Docker
 
 ```sh
 $ docker-compose build
-$ docker-compose run --rm app python main.py
+$ docker-compose run --rm app python main.test.py
 ```

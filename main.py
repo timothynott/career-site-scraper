@@ -3,27 +3,8 @@ from project.services.firestore import FirestoreService
 
 
 def scrape():
-    # WK: restore (and remove hardcoded config)
-    # firestore = FirestoreService()
-    # configs = firestore.get_configs()
-
-    configs = [
-        {
-            'company_name': 'Cornell Pump',
-            'url': 'https://recruiting.ultipro.com/ROP1001ROPER/JobBoard/5635cac7-6c69-44a7-850c-cf35112ce343',
-            'spider_class': 'ultipro'
-        },
-        {
-            'company_name': 'Cornell Pump II',
-            'url': 'https://recruiting.ultipro.com/ROP1001ROPER/JobBoard/5635cac7-6c69-44a7-850c-cf35112ce343',
-            'spider_class': 'ultipro'
-        },
-        {
-            'company_name': 'Cornell Pump III',
-            'url': 'https://recruiting.ultipro.com/ROP1001ROPER/JobBoard/5635cac7-6c69-44a7-850c-cf35112ce343',
-            'spider_class': 'ultipro'
-        }
-    ]
+    firestore = FirestoreService()
+    configs = firestore.get_configs()
 
     scraper = ScraperRunner()
     scraper.run(configs)
