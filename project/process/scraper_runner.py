@@ -12,7 +12,10 @@ class ScraperRunner:
         # The path seen from root, ie. from main.py
         settings_file_path = 'project.settings'
         os.environ.setdefault('SCRAPY_SETTINGS_MODULE', settings_file_path)
-        self.settings = get_project_settings()
+        project_settings = get_project_settings()
+        override_settings = config.get('SCRAPY_SETTINGS')
+        self.settings = {**project_settings, **override_settings}
+
         self.process = CrawlerProcess(self.settings)
         self.num_concurrent_crawls = config.get('CONCURRENT_CRAWLS', CONCURRENT_CRAWLS_DEFAULT)
 
