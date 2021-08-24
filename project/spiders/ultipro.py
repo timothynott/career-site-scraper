@@ -121,9 +121,5 @@ class UltiproSpider(CareerSiteSpider):
             wage_info_loader.add_value('base', compensation_amount['Value'])
             wage_info = wage_info_loader.load_item()
             job_loader.add_value('wageInfo', wage_info)
-        shift_info_loader = ShiftInfoLoader()
-        shift_info_loader.add_value('shifts', data['Title'])
-        shift_info = shift_info_loader.load_item()
-        job_loader.add_value('shiftInfo', shift_info)
         job = job_loader.load_item()
         return job

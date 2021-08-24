@@ -97,11 +97,5 @@ class ScrapeADPWFNSpider(CareerSiteSpider):
         except:
             job_loader.add_value('jobType', '')
         job_loader.add_value('jobLevel', '')
-        try:
-            job_loader.add_value('shiftInfo', data['requsitionTitle'])
-        except:
-            job_loader.add_value('shiftInfo', '')
-        job_loader.add_value('wageInfo', '')
-
         job = job_loader.load_item()
         return job
