@@ -26,4 +26,6 @@ class FirestoreService:
         collection_ref = self.db.collection(Collections['JOB_CACHE'])
         docs = collection_ref.where('source', '==', source).select({}).get()
         for doc in docs:
+            # WK: TEMP LINE
+            print('SLOW SERIES OPERATION')
             collection_ref.document(doc.id).delete()
