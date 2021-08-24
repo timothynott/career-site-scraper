@@ -12,6 +12,10 @@ from scrapy.exceptions import DropItem
 from .services.cloud_tasks import CloudTasksService
 from .services.firestore import FirestoreService
 
+# TODO: fetch singleton services
+firestore = FirestoreService()
+tasks = CloudTasksService()
+
 
 def drop_empty(data):
     for key, val in list(data.items()):
@@ -27,6 +31,16 @@ def drop_empty(data):
                     offset += 1
         if not val and not isinstance(val, (int, float, bool)):
             data.pop(key)
+
+
+class DropEmptyPipeline:
+
+    def process_item(self, item, spider):
+        drop_empty(item)
+        if item:
+            return item
+        else:
+            raise DropItem('Empty item')
 
 
 class WriteJsonPipeline:
@@ -47,33 +61,19 @@ class WriteJsonPipeline:
         return item
 
 
-class DropEmptyPipeline:
-
-    def process_item(self, item, spider):
-        drop_empty(item)
-        if item:
-            return item
-        else:
-            raise DropItem('Empty item')
-
-
 class IngestPipeline:
     queue_name = os.environ.get("JOB_BATCH_INGEST_QUEUE_NAME")
     job_board_ingest_route = "/ingest"
 
-    def __init__(self):
-        self.firestore = FirestoreService()
-        self.tasks = CloudTasksService()
-
     def open_spider(self, spider):
-        self.firestore.delete_cached_jobs(spider.url)
+        firestore.delete_cached_jobs(spider.url)
 
     def close_spider(self, spider):
         source = spider.url
         logging.info("creating ingestion task: {}".format(source))
         payload = {"source": source}
         # TODO: restore
-        # self.tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
+        # tasks.queue_task(self.queue_name, self.job_board_ingest_route, payload, 'POST')
 
     def process_item(self, item, spider):
         source = spider.url
@@ -89,10 +89,10 @@ class IngestPipeline:
             "description": item.get('description'),
             "jobType": item.get('jobType'),
             "jobLevel": item.get('jobLevel'),
-            "shiftInfo": item.get('shiftInfo'),
-            "wageInfo": item.get('wageInfo'),
+            # WK: improve syntax
+            "shiftInfo": item.get('shiftInfo') and dict(item.get('shiftInfo')),
+            "wageInfo": item.get('wageInfo') and dict(item.get('wageInfo')),
         }
 
-        # WK: test
-        self.firestore.set_cached_job(normalized_job)
+        firestore.set_cached_job(normalized_job)
         return item

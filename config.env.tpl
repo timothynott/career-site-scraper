@@ -1,5 +1,7 @@
 # GCP project id being used for Cloud Tasks, etc.
 PROJECT_ID=ff-app-dev
+# temp for local log error suppression
+GOOGLE_CLOUD_PROJECT=ff-app-dev
 
 # this is the service account that Google Cloud Tasks uses to sign JWTs for requests to our API
 GOOGLE_JWT_SERVICE_ACCOUNT=api-tasks@ff-app-dev.iam.gserviceaccount.com

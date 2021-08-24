@@ -55,9 +55,5 @@ class IcimsSpider(CareerSiteSpider):
                 'address', data['jobLocation'][0]['address']['streetAddress'])
             job_loader.add_value('description', data['description'])
             job_loader.add_value('date', data['datePosted'])
-            shift_info_loader = ShiftInfoLoader()
-            shift_info_loader.add_value('shifts', title)
-            shift_info = shift_info_loader.load_item()
-            job_loader.add_value('shiftInfo', shift_info)
             job = job_loader.load_item()
             return job

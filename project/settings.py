@@ -35,7 +35,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 8
 # CONCURRENT_REQUESTS_PER_IP = 1
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = True
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 TELNETCONSOLE_ENABLED = False
@@ -43,11 +43,18 @@ TELNETCONSOLE_ENABLED = False
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0'
 
-# Override the default request headers:
+# Override the default request headers
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en',
 }
+
+ITEM_PIPELINES = {
+    'project.pipelines.DropEmptyPipeline': 100,
+    'project.pipelines.IngestPipeline': 900,
+}
+
+LOG_LEVEL = logging.INFO
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
@@ -66,15 +73,6 @@ DEFAULT_REQUEST_HEADERS = {
 # EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 # }
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    # WK: WriteJson => Ingest
-    'project.pipelines.DropEmptyPipeline': 100,
-    # 'project.pipelines.WriteJsonPipeline': 200,
-    'project.pipelines.IngestPipeline': 900,
-}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -96,6 +94,3 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = '/tmp/httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = [502]
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-# LOG_LEVEL = logging.WARNING
-LOG_LEVEL = logging.INFO
