@@ -25,7 +25,10 @@ class FirestoreService:
     def delete_cached_jobs(self, source: str):
         collection_ref = self.db.collection(Collections['JOB_CACHE'])
         docs = collection_ref.where('source', '==', source).select({}).get()
+
+        batch = self.db.batch()
         for doc in docs:
-            # WK: TEMP LINE
-            print('SLOW SERIES OPERATION')
-            collection_ref.document(doc.id).delete()
+            doc_ref = collection_ref.document(doc.id)
+            batch.delete(doc_ref)
+
+        batch.commit()
