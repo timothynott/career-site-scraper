@@ -89,8 +89,9 @@ class IngestPipeline:
             "description": item.get('description'),
             "jobType": item.get('jobType'),
             "jobLevel": item.get('jobLevel'),
-            "shiftInfo": item.get('shiftInfo'),
-            "wageInfo": item.get('wageInfo'),
+            # WK: improve syntax
+            "shiftInfo": item.get('shiftInfo') and dict(item.get('shiftInfo')),
+            "wageInfo": item.get('wageInfo') and dict(item.get('wageInfo')),
         }
 
         self.firestore.set_cached_job(normalized_job)
